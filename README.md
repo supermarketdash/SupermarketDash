@@ -9,7 +9,7 @@
 				to {background-position:-1300px,0;}
 			}
 			.inner {
-				background: url("supermarket.jpg");
+				background: url("http://i58.tinypic.com/2qcfszc.jpg");
 				position:relative;
 				background-size:60%;
 				height: 650px;
