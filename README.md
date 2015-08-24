@@ -1,1 +1,392 @@
 # SupermarketDash
+<html>
+
+	<head>
+		<style>
+
+			@-webkit-keyframes bgscroll {
+				from {background-position:0,100;}
+				to {background-position:-1300px,0;}
+			}
+			.inner {
+				background: url("supermarket.jpg");
+				position:relative;
+				background-size:60%;
+				height: 650px;
+				width: 1350px;
+				z-index:100;
+				-webkit-animation:bgscroll 20s infinite linear;
+			}
+			
+			#mycanvas { 
+				position:relative;
+				z-index: 20;
+			}
+
+			.container {  
+				margin: 0 auto;
+				position: relative;
+				padding:0;
+				width:100%;
+				height:660px;
+			}
+				
+	
+			
+		
+		</style>
+		
+		<script src="http://cloud.github.com/downloads/processing-js/processing-js/processing-1.4.1.min.js"></script>
+		<script type="text/processing" data-processing-target="mycanvas">
+		
+	var food1;
+var bag;
+Pfont font;
+var w;
+var h;
+var score;
+/* @pjs preload="http://i57.tinypic.com/24glvmg.jpg"; */
+
+PImage gameover;
+	gameover = loadImage("http://i57.tinypic.com/24glvmg.jpg");
+	//gameover.resize(0, 50);
+    
+
+void setup(){
+	food1 = new ShoppingCart(1300);
+	bag = new Player(50,200);
+
+  //  image(gameover, 0, 0);
+	
+}
+
+void draw (){
+	size(1350, 660); // controls the size of the canvas
+	background(0,0,0);
+	bag.build();
+	bag.move();	
+	w = bag.getScore();
+	h = bag.getHealth();
+	fill(0, 0, 0);
+	textFont("Georgia", 20);
+	text("Score: " + w, 50,40);
+	text("Health: " + h, 50,60);
+		if (h <= 0) {
+			background(255,255,255);
+			image(gameover, 250, 100);
+		}
+		else {
+			food1.build();
+	food1.move();
+	bag.check(food1);
+	food1.addFood();
+		};
+}
+
+class Player{
+		var xP;
+		var yP;
+		var score;
+		var health;
+	Player(x, y){ 
+		xP = x;
+		yP = y;
+		score = 0;
+		health = 80;
+	}
+	void build(){ // draws the player
+		noStroke();
+		fill(120, 63, 39);
+		rect(xP, yP, 50, 100);
+		fill(255, 255, 255);
+		ellipse(xP+15, yP+20,10,10);
+		ellipse(xP+35, yP+20, 10, 10);
+		fill(0, 0, 0);
+		ellipse(xP+15, yP+20,5,5);
+		ellipse(xP+35, yP+20, 5, 5);
+		fill(255, 0, 0);
+		arc(xP+26,yP+60,30,33,0 * (Math.PI/180),180 * (Math.PI/180));
+		fill(255, 127, 174);
+		arc(xP+26,yP+66,16,19,0 * (Math.PI/180),180 * (Math.PI/180));
+		fill(0, 0, 0);
+		arc(xP+26,yP+0,17,14,0 * (Math.PI/180),180 * (Math.PI/180));
+	}
+	
+	void move(){ // moves the player
+		if (keyPressed == true && keyCode == 17){
+				background(0,0);
+				build();
+				yP -= 8;
+				background(0,0);
+				build(); 
+				yP = constrain(yP, 0, 450); // controls the limit of the y movement
+				} else {
+				{yP += 8;}
+				background(0,0);
+				build();
+				yP = constrain(yP, 0, 450); // controls the limit of the y movement
+
+			}
+		}
+	int getScore(){
+		return score;
+	}
+	int getHealth(){
+		return health;
+	}
+	
+	int getX(){ // returns the x Position of player 
+		return xP;
+	}
+	int getY(){ // returns the y position of player
+		return yP;
+	}
+	void check(ShoppingCart theFoodList){ // controls interaction between player and "fruits"
+		var aList = theFoodList.theFood(); //theFood() returns the foodList from the shopping cart class
+		for (var i = 0; i < aList.length; i++){
+			if ((aList[i].getX() >= xP && aList[i].getX() <= (xP + 80)) &&
+			(aList[i].getY() >= yP && aList[i].getY() <= (yP + 80))) {
+			aList[i].setX(-400);
+				if(aList[i].getValue()) {
+					score++; 
+					health += 3;
+				}
+				else {
+					health -= 20;
+				}
+			}
+		}
+	}
+}
+//Food class
+class Food {
+	var xPos;
+	var yPos;
+	var name;
+	var value;
+	//constructor
+	Food(x,y, n) {
+		xPos = x;
+		yPos = y;
+		name = n;
+		if (name == "grape" || name == "carrot" || name == "watermelon" || name == "broccoli" || name == "shroom"){value = true;}
+		else {value = false;}
+	}
+	//build function
+		void build() {
+			//grape code
+		if (name == "grape"){
+			strokeWeight(10);
+			stroke(77, 18, 18);
+			line(xPos+16, yPos, xPos+19, yPos-23);
+			stroke(0, 0, 0);
+			strokeWeight(2);
+			fill(60, 2, 107);
+			ellipse(xPos,yPos, 25, 25);
+			ellipse(xPos+31,yPos, 25, 25);
+			ellipse(xPos+15,yPos, 25, 25);
+			ellipse(xPos+23,yPos+19, 25, 25);
+			ellipse(xPos+8,yPos+19, 25, 25);
+			ellipse(xPos+16,yPos+38, 25, 25);
+			} else if( name == "fry"){
+			//fry
+			stroke(0,0,0);
+			fill(255, 255, 0);
+			strokeWeight(1);
+			rect(xPos,yPos-19,9,33);
+			rect(xPos+10,yPos-19,9,33);
+			rect(xPos+20,yPos-19,9,33);
+			rect(xPos+30,yPos-19,9,33);
+			fill(255, 0, 0);
+			strokeWeight(2);
+			rect(xPos,yPos,40,50);
+			fill(255, 255, 255);
+			ellipse(xPos+20,yPos+27,27,27);
+			fill(255, 255, 0);
+			rect(xPos+17, yPos+17, 6, 20);
+			noStroke();
+			} else if (name == "carrot"){
+				stroke(0,0,0);
+				strokeWeight(5);
+				stroke(9, 66, 0);
+				line(xPos+17, yPos-21, xPos+27, yPos + 12);
+				line(xPos+26, yPos-21, xPos+27, yPos + 12);
+				line(xPos+37, yPos-21, xPos+27, yPos + 12);
+				strokeWeight(1);
+				fill(255, 132, 0);
+				triangle(xPos +10, yPos, xPos + 27, yPos + 62, xPos + 46, yPos);
+				noStroke();
+			} else if (name == "ice cream"){
+				stroke(0,0,0);
+				fill(255, 255, 255);
+				strokeWeight(1);
+				ellipse(xPos - 38, yPos, 30, 30);
+				ellipse(xPos - 10, yPos, 30, 30);
+				ellipse(xPos - 24, yPos + -21, 30, 30);
+				ellipse(xPos + 10, yPos + -11, 30, 30);
+				ellipse(xPos + 37, yPos + -2, 30, 30);
+				ellipse(xPos + -1, yPos + -24, 30, 30);
+				ellipse(xPos + 33, yPos + -16, 30, 30);
+				ellipse(xPos + 19, yPos + -40, 30, 30);
+				ellipse(xPos + -17, yPos + -40, 30, 30);
+				ellipse(xPos + 0, yPos + -55, 30, 30);
+				fill(255, 0, 0);
+				ellipse(xPos, yPos - 70, 15, 15);
+				line(xPos, yPos-69, xPos+7, yPos-82);
+				ellipse(xPos, yPos - 70, 15, 15);
+				fill(0, 217, 255);
+				arc(xPos, yPos, 107, 68, 0 * (Math.PI/180), 180 * (Math.PI/180));
+				noStroke();
+			} else if (name == "watermelon"){
+				stroke(0,0,0);
+				fill(30, 102, 4);
+				arc(xPos, yPos, 75, 75, 0 * (Math.PI/180), 180* (Math.PI/180));
+				fill(255, 0, 0);
+				arc(xPos, yPos, 61, 61, 0 * (Math.PI/180), 180 * (Math.PI/180));
+				fill(0, 0, 0);
+				ellipse(xPos - 11, yPos+20, 2, 2);
+				ellipse(xPos + (10), yPos+20, 2, 2);
+				ellipse(xPos + (-1), yPos+10, 2, 2);
+				ellipse(xPos + (19), yPos+10, 2, 2);
+				ellipse(xPos + (-17), yPos+10, 2, 2);
+				ellipse(xPos + (-8), yPos+5, 2, 2);
+				ellipse(xPos + (9), yPos+6, 2, 2);
+				ellipse(xPos + (-1), yPos+19, 2, 2);
+				noStroke();
+			} else if (name == "soda"){
+				stroke(0,0,0);
+				strokeWeight(5);
+				line(xPos+10, yPos-10, xPos + 16, yPos + -77);
+				line(xPos+ 20, yPos-83, xPos + 16, yPos + -77);
+				strokeWeight(2);
+				fill(80, 255, 0);
+				quad(xPos, yPos, xPos+-10, yPos -60, xPos + 39, yPos - 60, xPos +32, yPos -0);
+				fill(255, 255, 255);
+				noStroke();
+				ellipse(xPos+15, yPos-25, 35, 15);
+				noStroke();
+			} else if (name == "broccoli") {
+				stroke(0,0,0);
+				fill(42, 87, 0);
+				rect(xPos, yPos, 8, 36);
+				ellipse(xPos, yPos, 15, 15);
+				ellipse(xPos, yPos+11, 15, 15);
+				ellipse(xPos-10, yPos+5, 15, 15);
+				ellipse(xPos+12, yPos+5, 15, 15);
+				ellipse(xPos+12, yPos+-6, 15, 15);
+				ellipse(xPos+12, yPos+16, 15, 15);
+				noStroke();
+			}
+			else if (name == "donut")  {
+				stroke(0,0,0);
+				fill(230, 210, 170);
+				strokeWeight(1);
+				ellipse(xPos, yPos, 70, 70);
+				fill(250, 195, 237);
+				ellipse(xPos, yPos, 60, 60);
+				fill(255, 255, 255);
+				ellipse(xPos, yPos, 15, 15);
+				noStroke();
+			}
+			else if (name == "shroom") {
+				strokeWeight(1);
+				stroke(0, 0, 0);
+				fill(235, 195, 115);
+				rect(xPos-4, yPos, 26, 44);
+				stroke(0, 0, 0);
+				arc(xPos + 10, yPos+10, 62, -83, 0 * (Math.PI/180), 180*(Math.PI/180));
+				noStroke();
+			}else if (name == "cupcake") {
+				stroke(0,0,0);
+				fill(173, 123, 62);
+				quad(xPos - 42, yPos - 73, xPos + 53, yPos - 51,xPos+41, yPos, xPos-22, yPos);
+				fill(35, 171, 173, 200);
+				quad(xPos - 36, yPos - 50, xPos + 54, yPos - 49,xPos+41, yPos, xPos-22, yPos);
+				strokeWeight(-4);
+				line(xPos-10, yPos, xPos + -24, yPos -49);
+				line(xPos-(-2), yPos, xPos + -9, yPos -50);
+				line(xPos-(-33), yPos, xPos + 44, yPos -50);
+				line(xPos-(-23), yPos, xPos + 26, yPos -48);
+				line(xPos-(-12), yPos, xPos + 9, yPos -49);
+				fill(173, 123, 62);
+				arc(xPos+8, yPos-42, 116, -119, 0 * (Math.PI/180), 180 * (Math.PI/180));
+				fill(255, 255, 255);
+				arc(xPos+8, yPos-62, 111, -80, 0* (Math.PI/180), 180* (Math.PI/180));
+				noStroke();
+			} else {}
+		
+	}
+	//move function
+	void move() {
+		xPos -= 8;
+	}
+	//function that returns a food's x value
+	int getX() {
+		return xPos;
+	}
+	int getY(){
+		return yPos;
+	}
+	void setX(num){
+		xPos = num;
+	}
+	void getValue(){
+		return value;
+	}
+	
+}// food ends
+class ShoppingCart{
+	var foodList = [];
+	var things = ["grape", "carrot", "watermelon", "broccoli", "fry",  "ice cream",  "soda", "donut", "shroom", "cupcake"];
+	var xP;
+	var size;
+	ShoppingCart(x){
+		xP = x;
+		for(var i = 0; i < 15; i++){
+			var tempX = random(0,2); // determines y
+			var y = random(50, 450);					
+			foodList.push(new Food(  (1350 + ( i * 200 )) ,y, things[(int) random(things.length)]  )   );
+		}
+	}
+		//build function
+		void build() { // calls every single build
+			for (var i = 0; i < foodList.length; i++) {
+				foodList[i].build();
+			}
+		}
+		//move function
+		void move() { // this goes and moves everything pushed into foodList
+			for (var i = 0; i < foodList.length; i++) {
+				foodList[i].move();
+			}
+		}
+		int[] theFood(){ // a list that returns the foods in the shoppingcart class
+			return foodList;
+		}	
+		void addFood(){
+			if (foodList[foodList.length-1].getX() < 1210){
+				/*for(var i = 0; i < 10; i++){
+					foodList.push(new Food(  (1350 + ( i * 200 )) ,y, things[(int) random(things.length)]  ) );
+					}*/
+				console.log(foodList.length);
+				foodList.shift();
+				console.log(foodList.length);
+				var y = random(50, 450);
+				foodList.push(new Food((1350) ,y, things[(int) random(things.length)]  ) );
+				console.log(foodList.length);
+				}	
+		}
+}
+
+		</script>
+	</head>
+	
+	<body>
+		<div class= "inner">
+				<div class= "container">
+					<canvas id="mycanvas"></canvas>
+				</div>	
+		</div>
+	</body>
+	
+</html>
